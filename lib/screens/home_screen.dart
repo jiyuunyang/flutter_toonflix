@@ -7,7 +7,7 @@ class HomeScreen extends StatelessWidget {
   // HomeScreen은 const가 될 수 없음 : Future 값을 갖는 것은 미리 값을 알 수 없음
   HomeScreen({super.key});
 
-  Future<List<WebtoonModel>> webtoons = ApiService.getTodaysToons();
+  final Future<List<WebtoonModel>> webtoons = ApiService.getTodaysToons();
 
   @override
   Widget build(BuildContext context) {
@@ -28,9 +28,19 @@ class HomeScreen extends StatelessWidget {
         // snapshot : Future의 상태를 알 수 있음
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            return const Text("There is data!");
+            // ListView.builder는 ListView의 optimized된 컴포넌트
+            return ListView.builder(
+              scrollDirection: Axis.vertical,
+              itemCount: snapshot.data!.length,
+              itemBuilder: (context, index) {
+                var webtoon = snapshot.data![index];
+                return Text(webtoon.title);
+              },
+            );
           }
-          return const Text('Loading...');
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
         },
       ),
     );
