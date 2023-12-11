@@ -29,13 +29,14 @@ class HomeScreen extends StatelessWidget {
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             // ListView.builder는 ListView의 optimized된 컴포넌트
-            return ListView.builder(
+            return ListView.separated(
               scrollDirection: Axis.vertical,
               itemCount: snapshot.data!.length,
               itemBuilder: (context, index) {
                 var webtoon = snapshot.data![index];
                 return Text(webtoon.title);
               },
+              separatorBuilder: (context, index) => const SizedBox(height: 20),
             );
           }
           return const Center(
