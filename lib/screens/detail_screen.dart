@@ -22,6 +22,8 @@ class _DetailScreenState extends State<DetailScreen> {
   late Future<List<WebtoonEpisodeModel>> episodes;
 
   @override
+  // getToonById, getLatestEpisodesById는
+  // widget.id 데이터에 의존하므로(전달되는 값이 필요하므로) initState를 씀
   void initState() {
     super.initState();
     webtoon = ApiService.getToonById(widget.id);
@@ -77,7 +79,7 @@ class _DetailScreenState extends State<DetailScreen> {
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   return Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 50),
+                    padding: const EdgeInsets.symmetric(horizontal: 68),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -88,7 +90,8 @@ class _DetailScreenState extends State<DetailScreen> {
                         const SizedBox(height: 15),
                         Text(
                           '${snapshot.data!.genre} | ${snapshot.data!.age}',
-                          style: const TextStyle(fontSize: 16),
+                          style: const TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.w600),
                         )
                       ],
                     ),
