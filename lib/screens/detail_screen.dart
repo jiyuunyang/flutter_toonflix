@@ -1,13 +1,32 @@
 import 'package:flutter/material.dart';
+import 'package:flutterwebtoon/models/webtoon_detail_model.dart';
+import 'package:flutterwebtoon/models/webtoon_episode_model.dart';
+import 'package:flutterwebtoon/services/api_service.dart';
 
-class DetailScreen extends StatelessWidget {
+class DetailScreen extends StatefulWidget {
   final String title, thumb, id;
+
   const DetailScreen({
     super.key,
     required this.title,
     required this.thumb,
     required this.id,
   });
+
+  @override
+  State<DetailScreen> createState() => _DetailScreenState();
+}
+
+class _DetailScreenState extends State<DetailScreen> {
+  late Future<WebtoonDetailModel> webtoon;
+  late Future<List<WebtoonEpisodeModel>> episodes;
+
+  @override
+  void initState() {
+    super.initState();
+    webtoon = ApiService.getToonById(widget.id);
+    episodes = ApiService.getLatestEpisodesById(widget.id);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +37,7 @@ class DetailScreen extends StatelessWidget {
           foregroundColor: Colors.green,
           backgroundColor: Colors.white,
           title: Text(
-            title,
+            widget.title,
             style: const TextStyle(fontSize: 24),
           ),
         ),
@@ -31,7 +50,8 @@ class DetailScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Hero(
-                  tag: id,
+                  // widget.[property] : 부모에게 가서 데이터 받기
+                  tag: widget.id,
                   child: Container(
                       width: 250,
                       // clipbehavior : 자식이 부모 영역 침범시에 자름
@@ -45,7 +65,7 @@ class DetailScreen extends StatelessWidget {
                               color: Colors.black.withOpacity(0.3),
                             )
                           ]),
-                      child: Image.network(thumb)),
+                      child: Image.network(widget.thumb)),
                 ),
               ],
             ),
