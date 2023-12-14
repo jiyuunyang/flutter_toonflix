@@ -3,6 +3,7 @@ import 'package:flutterwebtoon/models/webtoon_detail_model.dart';
 import 'package:flutterwebtoon/models/webtoon_episode_model.dart';
 import 'package:flutterwebtoon/services/api_service.dart';
 import 'package:flutterwebtoon/widgets/episode_widget.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class DetailScreen extends StatefulWidget {
   final String title, thumb, id;
@@ -21,6 +22,24 @@ class DetailScreen extends StatefulWidget {
 class _DetailScreenState extends State<DetailScreen> {
   late Future<WebtoonDetailModel> webtoon;
   late Future<List<WebtoonEpisodeModel>> episodes;
+  late SharedPreferences prefs;
+  bool isLiked = false;
+
+  Future initPrefs() async {
+    // 휴대폰 저장소에서 인스턴스를 얻음
+    prefs = await SharedPreferences.getInstance();
+    final likedToons = prefs.getStringList('likedToons');
+    if (likedToons != null) {
+      if (likedToons.contains(widget.id) == true) {
+        // UI refresh가 필요함
+        setState(() {
+          isLiked = true;
+        });
+      }
+    } else {
+      await prefs.setStringList('likedToons', []);
+    }
+  }
 
   @override
   // getToonById, getLatestEpisodesById는
@@ -29,6 +48,22 @@ class _DetailScreenState extends State<DetailScreen> {
     super.initState();
     webtoon = ApiService.getToonById(widget.id);
     episodes = ApiService.getLatestEpisodesById(widget.id);
+    initPrefs();
+  }
+
+  onHeartTap() async {
+    final likedToons = prefs.getStringList('likedToons');
+    if (likedToons != null) {
+      if (isLiked) {
+        likedToons.remove(widget.id);
+      } else {
+        likedToons.add(widget.id);
+      }
+      await prefs.setStringList('likedToons', likedToons);
+      setState(() {
+        isLiked = !isLiked;
+      });
+    }
   }
 
   @override
@@ -36,14 +71,18 @@ class _DetailScreenState extends State<DetailScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        elevation: 2,
-        foregroundColor: Colors.green,
-        backgroundColor: Colors.white,
-        title: Text(
-          widget.title,
-          style: const TextStyle(fontSize: 24),
-        ),
-      ),
+          elevation: 2,
+          foregroundColor: Colors.green,
+          backgroundColor: Colors.white,
+          title: Text(
+            widget.title,
+            style: const TextStyle(fontSize: 24),
+          ),
+          actions: [
+            IconButton(
+                onPressed: onHeartTap,
+                icon: Icon(isLiked ? Icons.favorite : Icons.favorite_outline))
+          ]),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(50),
