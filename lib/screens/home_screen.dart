@@ -8,6 +8,7 @@ class HomeScreen extends StatelessWidget {
   // HomeScreen은 const가 될 수 없음 : Future 값을 갖는 것은 미리 값을 알 수 없음
   HomeScreen({super.key});
 
+  // getTodaysToons는 의존하는 데이터가 없음(인자 없음) -> Stateless
   final Future<List<WebtoonModel>> webtoons = ApiService.getTodaysToons();
 
   @override
